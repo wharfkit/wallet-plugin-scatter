@@ -16,13 +16,10 @@
         "prepare": "make"
     },
     "dependencies": {
-        "eosjs": "20.0.0",
-        "scatter-ts": "^0.1.9",
+        "@wharfkit/protocol-scatter": "^1.0.0-rc1",
         "tslib": "^2.1.0"
     },
-    "peerDependencies": {
-        "@wharfkit/session": "^1.0.0"
-    },
+    "peerDependencies": {},
     "devDependencies": {
         "@babel/runtime": "^7.22.6",
         "@rollup/plugin-commonjs": "^25.0.4",
@@ -35,7 +32,6 @@
         "@types/node": "^18.7.18",
         "@typescript-eslint/eslint-plugin": "^5.20.0",
         "@typescript-eslint/parser": "^5.20.0",
-        "@wharfkit/session": "^1.0.0",
         "chai": "^4.3.4",
         "crypto-js": "^4.1.1",
         "eslint": "^8.13.0",
