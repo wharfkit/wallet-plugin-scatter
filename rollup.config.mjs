@@ -35,6 +35,7 @@ export default [
             sourcemap: true,
             exports: 'named',
         },
+        inlineDynamicImports: true,
         plugins: [
             typescript({target: 'es6'}),
             commonjs({
@@ -54,6 +55,7 @@ export default [
             format: 'esm',
             sourcemap: true,
         },
+        inlineDynamicImports: true,
         plugins: [
             typescript({target: 'es2020'}),
             commonjs({

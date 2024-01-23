@@ -9,8 +9,6 @@ import {
     WalletPluginMetadata,
     WalletPluginSignResponse,
 } from '@wharfkit/session'
-import {handleLogin, handleSignatureRequest} from '@wharfkit/protocol-scatter'
-import {ScatterEOS, ScatterJS} from 'scatter-ts'
 
 export class WalletPluginScatter extends AbstractWalletPlugin implements WalletPlugin {
     id = 'scatter'
@@ -30,8 +28,20 @@ export class WalletPluginScatter extends AbstractWalletPlugin implements WalletP
 
     constructor() {
         super()
-        ScatterJS.plugins(new ScatterEOS())
+
+        // this.intializeScatter()
     }
+
+    loadScatterProtocol() {
+        return import('@wharfkit/protocol-scatter')
+    }
+
+    // async intializeScatter() {
+    //         const {ScatterEOS, ScatterJS} = await import('scatter-ts')
+
+    //         ScatterJS.plugins(new ScatterEOS())
+    //     }
+    // }
 
     /**
      * The metadata for the wallet plugin to be displayed in the user interface.
@@ -50,16 +60,10 @@ export class WalletPluginScatter extends AbstractWalletPlugin implements WalletP
      * @param options WalletPluginLoginOptions
      * @returns Promise<WalletPluginLoginResponse>
      */
-    login(context: LoginContext): Promise<WalletPluginLoginResponse> {
-        return new Promise((resolve, reject) => {
-            handleLogin(context)
-                .then((response) => {
-                    resolve(response)
-                })
-                .catch((error) => {
-                    reject(error)
-                })
-        })
+    async login(context: LoginContext): Promise<WalletPluginLoginResponse> {
+        const { handleLogin } = await this.loadScatterProtocol()
+
+        return handleLogin(context)
     }
 
     /**
@@ -69,10 +73,12 @@ export class WalletPluginScatter extends AbstractWalletPlugin implements WalletP
      * @param resolved ResolvedSigningRequest
      * @returns Promise<Signature>
      */
-    sign(
+    async sign(
         resolved: ResolvedSigningRequest,
         context: TransactContext
     ): Promise<WalletPluginSignResponse> {
+        const { handleSignatureRequest } = await this.loadScatterProtocol()
+
         return handleSignatureRequest(resolved, context)
     }
 }
