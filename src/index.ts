@@ -1,6 +1,7 @@
 import {
     AbstractWalletPlugin,
     LoginContext,
+    LogoutContext,
     ResolvedSigningRequest,
     TransactContext,
     WalletPlugin,
@@ -9,7 +10,7 @@ import {
     WalletPluginMetadata,
     WalletPluginSignResponse,
 } from '@wharfkit/session'
-import {handleLogin, handleSignatureRequest} from '@wharfkit/protocol-scatter'
+import {handleLogin, handleLogout, handleSignatureRequest} from '@wharfkit/protocol-scatter'
 
 export class WalletPluginScatter extends AbstractWalletPlugin implements WalletPlugin {
     id = 'scatter'
@@ -45,7 +46,7 @@ export class WalletPluginScatter extends AbstractWalletPlugin implements WalletP
     /**
      * Performs the wallet logic required to login and return the chain and permission level to use.
      *
-     * @param options WalletPluginLoginOptions
+     * @param context LoginContext
      * @returns Promise<WalletPluginLoginResponse>
      */
     login(context: LoginContext): Promise<WalletPluginLoginResponse> {
@@ -53,6 +54,25 @@ export class WalletPluginScatter extends AbstractWalletPlugin implements WalletP
             handleLogin(context)
                 .then((response) => {
                     resolve(response)
+                })
+                .catch((error) => {
+                    reject(error)
+                })
+        })
+    }
+
+    /**
+     * Performs the wallet logic required to logout.
+     *
+     * @param context: LogoutContext
+     * @returns Promise<void>
+     */
+
+    logout(context: LogoutContext): Promise<void> {
+        return new Promise((resolve, reject) => {
+            handleLogout(context)
+                .then(() => {
+                    resolve()
                 })
                 .catch((error) => {
                     reject(error)
