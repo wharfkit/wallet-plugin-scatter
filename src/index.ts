@@ -10,7 +10,6 @@ import {
     WalletPluginMetadata,
     WalletPluginSignResponse,
 } from '@wharfkit/session'
-import {handleLogin, handleLogout, handleSignatureRequest} from '@wharfkit/protocol-scatter'
 
 export class WalletPluginScatter extends AbstractWalletPlugin implements WalletPlugin {
     id = 'scatter'
@@ -43,22 +42,28 @@ export class WalletPluginScatter extends AbstractWalletPlugin implements WalletP
         download: 'https://github.com/GetScatter/ScatterDesktop/releases',
     })
 
+    private async loadScatterProtocol() {
+        let protocolScatter
+        if (typeof window !== 'undefined') {
+            protocolScatter = await import('@wharfkit/protocol-scatter')
+        }
+
+        if (!protocolScatter) {
+            throw new Error('Scatter protocol is not available in this environment')
+        }
+
+        return protocolScatter
+    }
+
     /**
      * Performs the wallet logic required to login and return the chain and permission level to use.
      *
      * @param context LoginContext
      * @returns Promise<WalletPluginLoginResponse>
      */
-    login(context: LoginContext): Promise<WalletPluginLoginResponse> {
-        return new Promise((resolve, reject) => {
-            handleLogin(context)
-                .then((response) => {
-                    resolve(response)
-                })
-                .catch((error) => {
-                    reject(error)
-                })
-        })
+    async login(context: LoginContext): Promise<WalletPluginLoginResponse> {
+        const scatterProtocol = await this.loadScatterProtocol()
+        return scatterProtocol.handleLogin(context)
     }
 
     /**
@@ -68,16 +73,9 @@ export class WalletPluginScatter extends AbstractWalletPlugin implements WalletP
      * @returns Promise<void>
      */
 
-    logout(context: LogoutContext): Promise<void> {
-        return new Promise((resolve, reject) => {
-            handleLogout(context)
-                .then(() => {
-                    resolve()
-                })
-                .catch((error) => {
-                    reject(error)
-                })
-        })
+    async logout(context: LogoutContext): Promise<void> {
+        const scatterProtocol = await this.loadScatterProtocol()
+        return scatterProtocol.handleLogout(context)
     }
 
     /**
@@ -87,10 +85,11 @@ export class WalletPluginScatter extends AbstractWalletPlugin implements WalletP
      * @param resolved ResolvedSigningRequest
      * @returns Promise<Signature>
      */
-    sign(
+    async sign(
         resolved: ResolvedSigningRequest,
         context: TransactContext
     ): Promise<WalletPluginSignResponse> {
-        return handleSignatureRequest(resolved, context)
+        const scatterProtocol = await this.loadScatterProtocol()
+        return scatterProtocol.handleSignatureRequest(resolved, context)
     }
 }
